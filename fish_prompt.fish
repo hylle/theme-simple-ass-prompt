@@ -4,6 +4,23 @@ set __fish_git_prompt_char_untrackedfiles '☡'
 set __fish_git_prompt_char_stashstate '↩'
 set __fish_git_prompt_char_cleanstate '✓'
 
+set __theme_color_orange FD971F
+set __theme_color_blue 6EC9DD
+set __theme_color_green A6E22E
+set __theme_color_yellow E6DB7E
+set __theme_color_pink F92672
+set __theme_color_grey 554F48
+set __theme_color_white F1F1F1
+set __theme_color_purple 9458FF
+set __theme_color_lilac AE81FF
+
+function __theme_color_echo
+  set_color $argv[1]
+  if test (count $argv) -eq 2
+    echo -n $argv[2]
+  end
+end
+
 # Display the state of the branch when inside of a git repo
 function __simple_ass_prompt_parse_git_branch_state -d "Display the state of the branch"
   git update-index --really-refresh -q 1> /dev/null
@@ -38,14 +55,14 @@ function __simple_ass_prompt_git -d "Display the actual git branch"
 
   if git_is_repo; and test -z $is_dot_git
     printf 'on '
-    set_color purple
+    set_color $__theme_color_blue
 
     set -l git_branch (command git symbolic-ref --quiet --short HEAD 2> /dev/null; or git rev-parse --short HEAD 2> /dev/null; or echo -n '(unknown)')
 
     printf '%s ' $git_branch
 
     set state (__simple_ass_prompt_parse_git_branch_state)
-    set_color 0087ff
+    set_color $__theme_color_lilac
     printf '[%s]' $state
 
     set_color normal
@@ -56,8 +73,6 @@ end
 function __simple_ass_prompt_get_user -d "Print the user"
   if test $USER = 'root'
     set_color red
-  else
-    set_color d75f00
   end
   printf '%s' (whoami)
 end
@@ -75,7 +90,6 @@ end
 
 # Get Project Working Directory
 function __simple_ass_prompt_pwd -d "Get PWD"
-  set_color $fish_color_cwd
   printf '%s ' (prompt_pwd)
 end
 
@@ -84,17 +98,12 @@ function fish_prompt
   set -l code $status
 
   # Logged in user
-  __simple_ass_prompt_get_user
-  set_color normal
-  printf ' at '
-
-  # Machine logged in to
-  __simple_ass_prompt_get_host
-  set_color normal
-  printf ' in '
+	__theme_color_echo $__theme_color_purple (__simple_ass_prompt_get_user)
 
   # Path
-  __simple_ass_prompt_pwd
+	set_color normal
+  printf ' in '
+	__theme_color_echo $__theme_color_pink (__simple_ass_prompt_pwd)
   set_color normal
 
   # Git info
